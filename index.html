@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반려동물 정보</title>
+
+<style>
+body {
+    margin:0;
+    font-family: 'Pretendard', sans-serif;
+    background: #f2f4f8;
+}
+
+.container {
+    max-width: 420px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.profile {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 15px;
+    border: 4px solid #eee;
+}
+
+.name {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.desc {
+    color: #666;
+    margin-bottom: 20px;
+}
+
+.btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: white;
+    font-size: 17px;
+}
+
+.call { background: #ff6b6b; }
+.sms { background: #4dabf7; }
+.loc { background: #51cf66; }
+
+.footer {
+    margin-top: 20px;
+    font-size: 13px;
+    color: #aaa;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+<div class="card">
+
+<img id="petImage" class="profile" src="https://via.placeholder.com/120">
+
+<div id="petName" class="name">불러오는 중...</div>
+<div id="message" class="desc">잠시만 기다려주세요</div>
+
+<a id="callBtn" class="btn call">📞 전화하기</a>
+<a id="smsBtn" class="btn sms">💬 문자하기</a>
+<a href="#" onclick="sendLocation()" class="btn loc">📍 내 위치 보내기</a>
+
+<div class="footer">QR 보호 서비스</div>
+
+</div>
+</div>
+
+
+<script type="module">
+// 🔥 Supabase SDK 불러오기
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+// 🔥 Supabase 설정 (본인 프로젝트 URL 및 anon public key 입력)
+// Supabase 라이브러리는 URL이 반드시 http:// 또는 https:// 로 시작해야 에러가 나지 않습니다.
+const supabaseUrl = 'https://ogenankqvedrsfsfkbit.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nZW5hbmtxdmVkcnNmc2ZrYml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNjY1NTMsImV4cCI6MjA5Mjc0MjU1M30.QNjpO3VtBHwAPQ162r5bq94Pr8cHEzUdJ2eXNvHgDvI';
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// URL에서 ID 가져오기
+const urlParams = new URLSearchParams(window.location.search);
+const tokenId = urlParams.get("token");
+
+let phoneNumber = "";
+
+async function fetchPetData() {
+    if (!tokenId) {
+        document.getElementById("Name").innerText = "정보 없음";
+        document.getElementById("message").innerText = "잘못된 접근입니다";
+        return;
+    }
+
+    try {	
+   //  console.log("token:", tokenId);    
+       const { data, error } = await supabase.rpc('get_pet_by_token', { input_token: tokenId });      
+   //  console.log("data:", data);
+   //  console.log("error:", error);
+
+
+        if (data && !error) {
+            phoneNumber = data[0].number;
+
+            document.getElementById("petName").innerText = data[0].name;
+            document.getElementById("message").innerText = "이 아이를 보호 중입니다";
+
+            document.getElementById("callBtn").href = `tel:${data[0].number}`;
+            document.getElementById("smsBtn").href = `sms:${data[0].number}`;
+
+            if (data[0].image) {
+                document.getElementById("petImage").src = data[0].image;
+            }
+        } else {
+            document.getElementById("petName").innerText = "정보 없음";
+            document.getElementById("message").innerText = "등록되지 않은 QR입니다";
+        }
+    } catch (error) {
+        document.getElementById("petName").innerText = "연결 오류";
+        document.getElementById("message").innerText = "실제 Supabase URL과 Key를 입력해주세요.";
+        console.error("Supabase Error:", error);
+    }
+}
+
+fetchPetData();
+
+// 📍 위치 전송
+window.sendLocation = function() {
+
+    if (!phoneNumber) {
+        alert("전화번호 정보 없음");
+        return;
+    }
+
+    if (!navigator.geolocation) {
+        alert("위치 기능 지원 안됨");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(position => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        const mapLink = `https://maps.google.com/?q=${lat},${lng}`;
+
+        window.location.href =
+            `sms:${phoneNumber}?body=반려동물 발견 위치입니다 → ${mapLink}`;
+    });
+};
+
+</script>
+
+</body>
+</html>
