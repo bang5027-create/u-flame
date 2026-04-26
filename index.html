@@ -2,172 +2,361 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>반려동물 정보</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>반려동물 정보 | 보호 서비스</title>
 
 <style>
-body {
-    margin:0;
-    font-family: 'Pretendard', sans-serif;
-    background: #f2f4f8;
+/* Reset & base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.container {
-    max-width: 420px;
-    margin: 0 auto;
+body {
+    margin: 0;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background: #f2f4f8;
+    
+    /* 중심 정렬 (가로 + 세로) */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
     padding: 20px;
 }
 
-.card {
-    background: white;
-    border-radius: 20px;
-    padding: 25px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+/* 컨테이너: 유연한 너비, 최대 너비 제한 */
+.container {
+    width: 100%;
+    max-width: 420px;
+    margin: 0;
+    padding: 0;
 }
 
+/* 카드 스타일 + 부드러운 그림자 */
+.card {
+    background: white;
+    border-radius: 28px;
+    padding: 28px 24px 32px 24px;
+    text-align: center;
+    box-shadow: 0 20px 35px -12px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.02);
+    transition: transform 0.2s ease;
+}
+
+/* 프로필 이미지 */
 .profile {
     width: 120px;
     height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    margin-bottom: 15px;
-    border: 4px solid #eee;
+    margin-bottom: 18px;
+    border: 4px solid #ffffff;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+    background-color: #f8f9fc;
 }
 
+/* 반려동물 이름 */
 .name {
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: #1e2a3e;
+    margin-bottom: 8px;
 }
 
+/* 설명 메시지 (보호중 / 안내 문구) */
 .desc {
-    color: #666;
-    margin-bottom: 20px;
+    font-size: 15px;
+    color: #5b6e8c;
+    margin-bottom: 24px;
+    line-height: 1.4;
+    font-weight: 450;
 }
 
+/* 공통 버튼 스타일 */
 .btn {
     display: block;
     width: 100%;
-    padding: 15px;
-    margin-top: 10px;
-    border-radius: 12px;
+    padding: 14px 16px;
+    margin-top: 12px;
+    border-radius: 60px;
     text-decoration: none;
-    color: white;
+    font-weight: 600;
     font-size: 17px;
+    text-align: center;
+    transition: all 0.2s ease;
+    letter-spacing: -0.2px;
+    border: none;
+    cursor: pointer;
+    box-sizing: border-box;
 }
 
-.call { background: #ff6b6b; }
-.sms { background: #4dabf7; }
-.loc { background: #51cf66; }
+/* 전화 버튼 */
+.call {
+    background: #ff6b6b;
+    color: white;
+    box-shadow: 0 4px 8px rgba(255, 107, 107, 0.25);
+}
+.call:hover { background: #ff5252; transform: scale(0.98); }
 
+/* 문자 버튼 */
+.sms {
+    background: #4dabf7;
+    color: white;
+    box-shadow: 0 4px 8px rgba(77, 171, 247, 0.2);
+}
+.sms:hover { background: #339af0; transform: scale(0.98); }
+
+/* 위치 버튼 */
+.loc {
+    background: #51cf66;
+    color: white;
+    box-shadow: 0 4px 8px rgba(81, 207, 102, 0.2);
+}
+.loc:hover { background: #40c057; transform: scale(0.98); }
+
+/* 푸터 문구 */
 .footer {
-    margin-top: 20px;
-    font-size: 13px;
-    color: #aaa;
+    margin-top: 28px;
+    font-size: 12px;
+    color: #9aaebf;
+    font-weight: 400;
+    letter-spacing: -0.2px;
+    border-top: 1px solid #edf2f7;
+    padding-top: 20px;
+}
+
+/* 모바일에서 터치 영역 최적화 */
+.btn:active {
+    transform: scale(0.97);
+    transition: 0.05s;
+}
+
+/* 메시지 영역에 로딩 또는 오류 플레이스홀더 스타일 */
+.desc.loading-state {
+    color: #8f9bb3;
+}
+
+/* 이미지 로딩 대비 배경 */
+img.profile {
+    background: #e9ecef;
 }
 </style>
 
 </head>
-
 <body>
 
 <div class="container">
-<div class="card">
-
-<img id="petImage" class="profile" src="https://via.placeholder.com/120">
-
-<div id="petName" class="name">불러오는 중...</div>
-<div id="message" class="desc">잠시만 기다려주세요</div>
-
-<a id="callBtn" class="btn call">📞 전화하기</a>
-<a id="smsBtn" class="btn sms">💬 문자하기</a>
-<a href="#" onclick="sendLocation()" class="btn loc">📍 내 위치 보내기</a>
-
-<div class="footer">QR 보호 서비스</div>
-
+    <div class="card">
+        <img id="petImage" class="profile" src="https://via.placeholder.com/120?text=펫+사진" alt="반려동물 프로필">
+        <div id="petName" class="name">불러오는 중...</div>
+        <div id="message" class="desc">잠시만 기다려주세요</div>
+        
+        <a id="callBtn" class="btn call" href="tel:">📞 전화하기</a>
+        <a id="smsBtn" class="btn sms" href="sms:">💬 문자하기</a>
+        <a href="#" id="locationBtn" class="btn loc">📍 내 위치 보내기</a>
+        
+        <div class="footer">QR 보호 서비스</div>
+    </div>
 </div>
-</div>
-
 
 <script type="module">
-// 🔥 Supabase SDK 불러오기
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    // 🔥 Supabase SDK (ES Module)
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-// 🔥 Supabase 설정 (본인 프로젝트 URL 및 anon public key 입력)
-// Supabase 라이브러리는 URL이 반드시 http:// 또는 https:// 로 시작해야 에러가 나지 않습니다.
-const supabaseUrl = 'https://ogenankqvedrsfsfkbit.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nZW5hbmtxdmVkcnNmc2ZrYml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNjY1NTMsImV4cCI6MjA5Mjc0MjU1M30.QNjpO3VtBHwAPQ162r5bq94Pr8cHEzUdJ2eXNvHgDvI';
-const supabase = createClient(supabaseUrl, supabaseKey);
+    // ✅ Supabase 설정 (공개 URL + anon key)
+    const supabaseUrl = 'https://ogenankqvedrsfsfkbit.supabase.co';
+    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9nZW5hbmtxdmVkcnNmc2ZrYml0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNjY1NTMsImV4cCI6MjA5Mjc0MjU1M30.QNjpO3VtBHwAPQ162r5bq94Pr8cHEzUdJ2eXNvHgDvI';
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
-// URL에서 ID 가져오기
-const urlParams = new URLSearchParams(window.location.search);
-const tokenId = urlParams.get("token");
+    // URL 파라미터에서 token (고유 ID) 가져오기
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenId = urlParams.get("token");
+    
+    // 전화번호 저장 (위치 전송, 버튼 링크에 사용)
+    let phoneNumber = "";
 
-let phoneNumber = "";
+    // DOM 요소 참조
+    const petImageEl = document.getElementById("petImage");
+    const petNameEl = document.getElementById("petName");
+    const messageEl = document.getElementById("message");
+    const callBtn = document.getElementById("callBtn");
+    const smsBtn = document.getElementById("smsBtn");
 
-async function fetchPetData() {
-    if (!tokenId) {
-        document.getElementById("Name").innerText = "정보 없음";
-        document.getElementById("message").innerText = "잘못된 접근입니다";
-        return;
-    }
-
-    try {	
-   //  console.log("token:", tokenId);    
-       const { data, error } = await supabase.rpc('get_pet_by_token', { input_token: tokenId });      
-   //  console.log("data:", data);
-   //  console.log("error:", error);
-
-
-        if (data && !error) {
-            phoneNumber = data[0].number;
-
-            document.getElementById("petName").innerText = data[0].name;
-            document.getElementById("message").innerText = "이 아이를 보호 중입니다";
-
-            document.getElementById("callBtn").href = `tel:${data[0].number}`;
-            document.getElementById("smsBtn").href = `sms:${data[0].number}`;
-
-            if (data[0].image) {
-                document.getElementById("petImage").src = data[0].image;
-            }
-        } else {
-            document.getElementById("petName").innerText = "정보 없음";
-            document.getElementById("message").innerText = "등록되지 않은 QR입니다";
+    // 반려동물 데이터 패치 (RPC 호출)
+    async function fetchPetData() {
+        // 1) 토큰 검증
+        if (!tokenId) {
+            petNameEl.innerText = "정보 없음";
+            messageEl.innerText = "잘못된 접근입니다.\nQR 코드가 올바르지 않아요.";
+            messageEl.style.color = "#e03131";
+            // 버튼 비활성화 스타일 (링크 무효화)
+            callBtn.href = "javascript:void(0)";
+            smsBtn.href = "javascript:void(0)";
+            callBtn.style.opacity = "0.6";
+            smsBtn.style.opacity = "0.6";
+            callBtn.style.pointerEvents = "none";
+            smsBtn.style.pointerEvents = "none";
+            return;
         }
-    } catch (error) {
-        document.getElementById("petName").innerText = "연결 오류";
-        document.getElementById("message").innerText = "실제 Supabase URL과 Key를 입력해주세요.";
-        console.error("Supabase Error:", error);
+
+        try {
+            // Supabase RPC 함수 get_pet_by_token 호출
+            const { data, error } = await supabase.rpc('get_pet_by_token', { input_token: tokenId });
+            
+            // 디버깅용 (프로덕션 시 주석 처리 가능)
+            // console.log("RPC 응답 데이터:", data);
+            // console.log("RPC 에러:", error);
+
+            // 정상 데이터 & 배열 형태 & 내용 존재
+            if (data && Array.isArray(data) && data.length > 0 && !error) {
+                const petInfo = data[0];   // 첫 번째 레코드 사용
+                phoneNumber = petInfo.number || "";
+                const petNameValue = petInfo.name || "이름 없음";
+                const imageUrl = petInfo.image || "";
+                const statusMsg = petInfo.message || "이 아이를 보호 중입니다";
+
+                // UI 업데이트
+                petNameEl.innerText = petNameValue;
+                messageEl.innerText = statusMsg;
+                messageEl.style.color = "#5b6e8c"; // 원래 색상 복구
+                
+                // 전화, 문자 링크 설정
+                if (phoneNumber && phoneNumber.trim() !== "") {
+                    callBtn.href = `tel:${phoneNumber}`;
+                    smsBtn.href = `sms:${phoneNumber}`;
+                    callBtn.style.opacity = "1";
+                    smsBtn.style.opacity = "1";
+                    callBtn.style.pointerEvents = "auto";
+                    smsBtn.style.pointerEvents = "auto";
+                } else {
+                    // 전화번호 없는 경우 버튼 비활성화 처리
+                    callBtn.href = "javascript:void(0)";
+                    smsBtn.href = "javascript:void(0)";
+                    callBtn.style.opacity = "0.5";
+                    smsBtn.style.opacity = "0.5";
+                    callBtn.style.pointerEvents = "none";
+                    smsBtn.style.pointerEvents = "none";
+                    messageEl.innerText = "등록된 연락처가 없습니다. 관리자에게 문의하세요.";
+                }
+                
+                // 프로필 이미지 설정 (유효한 URL만)
+                if (imageUrl && (imageUrl.startsWith("http") || imageUrl.startsWith("data:"))) {
+                    petImageEl.src = imageUrl;
+                } else {
+                    // 기본 이미지 (귀여운 펫 플레이스홀더)
+                    petImageEl.src = "https://via.placeholder.com/120?text=🐾+펫";
+                }
+                
+                // 이미지 로드 실패 시 fallback
+                petImageEl.onerror = () => {
+                    petImageEl.src = "https://via.placeholder.com/120?text=🐶+반려동물";
+                };
+                
+            } else {
+                // 데이터 없음 || error 존재 || 빈 배열
+                console.warn("데이터 없음 또는 RPC 에러:", error);
+                petNameEl.innerText = "정보 없음";
+                messageEl.innerText = "등록되지 않은 QR 코드입니다.\n보호 서비스에 문의해주세요.";
+                messageEl.style.color = "#e8590c";
+                // 링크 제거
+                callBtn.href = "javascript:void(0)";
+                smsBtn.href = "javascript:void(0)";
+                callBtn.style.opacity = "0.6";
+                smsBtn.style.opacity = "0.6";
+                callBtn.style.pointerEvents = "none";
+                smsBtn.style.pointerEvents = "none";
+                // 기본 이미지
+                petImageEl.src = "https://via.placeholder.com/120?text=❓+QR오류";
+            }
+        } catch (err) {
+            console.error("Supabase 연결 오류:", err);
+            petNameEl.innerText = "연결 오류";
+            messageEl.innerText = "서버 연결에 실패했습니다.\n잠시 후 다시 시도해주세요.";
+            messageEl.style.color = "#d92b2b";
+            callBtn.href = "javascript:void(0)";
+            smsBtn.href = "javascript:void(0)";
+            callBtn.style.opacity = "0.6";
+            smsBtn.style.opacity = "0.6";
+            callBtn.style.pointerEvents = "none";
+            smsBtn.style.pointerEvents = "none";
+            petImageEl.src = "https://via.placeholder.com/120?text=⚠️+에러";
+        }
     }
-}
 
-fetchPetData();
+    // 위치 전송 함수 (인라인 onclick 재정의, 안전한 동작)
+    window.sendLocation = function() {
+        // 먼저 전화번호 유효성 검사
+        if (!phoneNumber || phoneNumber.trim() === "") {
+            alert("📵 보호자 전화번호 정보가 없어 위치를 보낼 수 없습니다.\nQR 코드 관리자에게 문의하세요.");
+            return;
+        }
 
-// 📍 위치 전송
-window.sendLocation = function() {
+        // Geolocation API 지원 확인
+        if (!navigator.geolocation) {
+            alert("📍 이 브라우저는 위치 기능을 지원하지 않습니다.\n직접 전화 또는 문자로 알려주세요.");
+            return;
+        }
 
-    if (!phoneNumber) {
-        alert("전화번호 정보 없음");
-        return;
+        // 사용자 위치 가져오기
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                // Google Maps 링크 생성
+                const mapLink = `https://maps.google.com/?q=${lat},${lng}`;
+                // 문자 메시지 본문 (반려동물 발견 위치 안내)
+                const messageBody = `🐶 반려동물 발견 위치입니다! 🐱\n다음 경로에서 보호 중이에요 → ${mapLink}\n※ 해당 위치로 와주시면 감사하겠습니다.`;
+                
+                // SMS 앱 실행 (인코딩)
+                const smsUrl = `sms:${phoneNumber}?body=${encodeURIComponent(messageBody)}`;
+                window.location.href = smsUrl;
+            },
+            (error) => {
+                // 위치 권한 거부 또는 오류 처리
+                console.error("위치 오류:", error);
+                switch(error.code) {
+                    case error.PERMISSION_DENIED:
+                        alert("🔒 위치 권한이 거부되었습니다.\n설정에서 위치 접근을 허용한 후 다시 시도해주세요.");
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        alert("📡 위치 정보를 사용할 수 없습니다.\nGPS 신호를 확인해주세요.");
+                        break;
+                    case error.TIMEOUT:
+                        alert("⏰ 위치 요청 시간 초과. 잠시 후 다시 시도해주세요.");
+                        break;
+                    default:
+                        alert("위치를 가져올 수 없습니다. 직접 전화로 알려주세요.");
+                }
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    };
+
+    // 위치 버튼 이벤트 연결 (기존 onclick 덮어쓰지 않고 addEventListener로 안전하게)
+    const locationBtn = document.getElementById("locationBtn");
+    if (locationBtn) {
+        // 기존 onclick 속성을 제거하고 addEventListener로 대체
+        locationBtn.removeAttribute("onclick");
+        locationBtn.addEventListener("click", (e) => {
+            e.preventDefault();  // 링크 기본 동작(#) 방지
+            window.sendLocation();
+        });
     }
+    
+    // 추가: 전화/문자 버튼 클릭 시 데이터 확인용 (옵션)
+    // 아무것도 없는 링크 방지 (이미 href는 동적으로 채움)
+    
+    // 페이지 로드 시 데이터 패치
+    fetchPetData();
 
-    if (!navigator.geolocation) {
-        alert("위치 기능 지원 안됨");
-        return;
-    }
-
-    navigator.geolocation.getCurrentPosition(position => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-
-        const mapLink = `https://maps.google.com/?q=${lat},${lng}`;
-
-        window.location.href =
-            `sms:${phoneNumber}?body=반려동물 발견 위치입니다 → ${mapLink}`;
-    });
-};
-
+    // (추가) 로딩 상태 이미지 fallback 처리 요령: 이미지가 깨질 경우 대체 이미지
+    petImageEl.onerror = () => {
+        if (!petImageEl.src.includes("placeholder")) {
+            petImageEl.src = "https://via.placeholder.com/120?text=🐕+반려동물";
+        }
+    };
 </script>
 
 </body>
