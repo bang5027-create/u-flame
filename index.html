@@ -204,15 +204,11 @@ img.profile {
         try {
             // Supabase RPC 함수 get_pet_by_token 호출
             const { data, error } = await supabase.rpc('get_pet_by_token', { input_token: tokenId });
-            
-            // 디버깅용 (프로덕션 시 주석 처리 가능)
-            // console.log("RPC 응답 데이터:", data);
-            // console.log("RPC 에러:", error);
 
             // 정상 데이터 & 배열 형태 & 내용 존재
             if (data && Array.isArray(data) && data.length > 0 && !error) {
                 const petInfo = data[0];   // 첫 번째 레코드 사용
-                phoneNumber = petInfo.number || "";
+                phoneNumber = "0"+petInfo.number || "";
                 const petNameValue = petInfo.name || "이름 없음";
                 const imageUrl = petInfo.image || "";
                 const statusMsg = petInfo.message || "이 아이를 보호 중입니다";
